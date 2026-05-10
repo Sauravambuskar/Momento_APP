@@ -1,9 +1,14 @@
 {
   "expo": {
+    "name": "momento",
+    "slug": "momento",
     "extra": {
       "eas": {
         "projectId": "26f0f651-ab35-48b6-9bf6-cd76b422825c"
       }
+    },
+    "android": {
+      "package": "com.it.sainikjankalyangmail.com.momento"
     }
   }
 }
