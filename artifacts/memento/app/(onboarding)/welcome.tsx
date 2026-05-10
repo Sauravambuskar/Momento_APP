@@ -45,7 +45,7 @@ export default function WelcomeScreen() {
 
   function handleGetStarted() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    router.push("/(onboarding)/");
+    router.push("/(onboarding)/step1" as any);
   }
 
   return (
