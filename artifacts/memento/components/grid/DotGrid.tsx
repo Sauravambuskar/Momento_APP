@@ -19,7 +19,7 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const PADDING = 16;
 const COLS = 52;
 const CELL = Math.floor((SCREEN_WIDTH - PADDING * 2) / COLS);
-const DOT_R = Math.max(2, Math.floor(CELL * 0.38));
+const DOT_R = Math.max(3, Math.floor(CELL * 0.46));
 
 interface PulsingDotProps {
   cx: number;
