@@ -16,13 +16,24 @@ import {
   saveWeekEntries,
   setOnboarded,
 } from "@/lib/storage";
+import {
+  authSignIn,
+  authSignOut,
+  authSignUp,
+  getCurrentSession,
+} from "@/lib/auth";
 import { getWeekKey } from "@/lib/weekUtils";
 
 interface AppContextType {
   isLoading: boolean;
+  isAuthenticated: boolean;
+  currentEmail: string | null;
   isOnboarded: boolean;
   userProfile: UserProfile | null;
   weekEntries: Record<string, WeekEntry>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signOut: () => Promise<void>;
   completeOnboarding: (profile: UserProfile) => Promise<void>;
   saveWeekEntry: (entry: WeekEntry) => Promise<void>;
   getWeekEntry: (weekNumber: number) => WeekEntry | undefined;
@@ -38,30 +49,59 @@ export function AppContextProvider({
   children: React.ReactNode;
 }) {
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentEmail, setCurrentEmail] = useState<string | null>(null);
   const [isOnboarded, setIsOnboarded] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [weekEntries, setWeekEntries] = useState<Record<string, WeekEntry>>(
-    {}
-  );
+  const [weekEntries, setWeekEntries] = useState<Record<string, WeekEntry>>({});
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [onboarded, profile, entries] = await Promise.all([
+        const [session, onboarded, profile, entries] = await Promise.all([
+          getCurrentSession(),
           getIsOnboarded(),
           loadUserProfile(),
           loadWeekEntries(),
         ]);
+        if (session) {
+          setIsAuthenticated(true);
+          setCurrentEmail(session.email);
+        }
         setIsOnboarded(onboarded);
         setUserProfile(profile);
         setWeekEntries(entries);
-      } catch (e) {
+      } catch {
         // ignore
       } finally {
         setIsLoading(false);
       }
     }
     loadData();
+  }, []);
+
+  const signIn = useCallback(async (email: string, password: string) => {
+    const result = await authSignIn(email, password);
+    if (result.success) {
+      setIsAuthenticated(true);
+      setCurrentEmail(email.toLowerCase().trim());
+    }
+    return result;
+  }, []);
+
+  const signUp = useCallback(async (email: string, password: string) => {
+    const result = await authSignUp(email, password);
+    if (result.success) {
+      setIsAuthenticated(true);
+      setCurrentEmail(email.toLowerCase().trim());
+    }
+    return result;
+  }, []);
+
+  const signOut = useCallback(async () => {
+    await authSignOut();
+    setIsAuthenticated(false);
+    setCurrentEmail(null);
   }, []);
 
   const completeOnboarding = useCallback(async (profile: UserProfile) => {
@@ -109,9 +149,14 @@ export function AppContextProvider({
     <AppContext.Provider
       value={{
         isLoading,
+        isAuthenticated,
+        currentEmail,
         isOnboarded,
         userProfile,
         weekEntries,
+        signIn,
+        signUp,
+        signOut,
         completeOnboarding,
         saveWeekEntry,
         getWeekEntry,

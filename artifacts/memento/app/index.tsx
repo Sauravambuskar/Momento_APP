@@ -4,7 +4,7 @@ import { ActivityIndicator, View } from "react-native";
 import { useApp } from "@/contexts/AppContext";
 
 export default function Index() {
-  const { isLoading, isOnboarded } = useApp();
+  const { isLoading, isAuthenticated, isOnboarded } = useApp();
 
   if (isLoading) {
     return (
@@ -21,9 +21,13 @@ export default function Index() {
     );
   }
 
-  if (isOnboarded) {
-    return <Redirect href="/(tabs)" />;
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/sign-in" />;
   }
 
-  return <Redirect href="/(onboarding)/welcome" />;
+  if (!isOnboarded) {
+    return <Redirect href="/(onboarding)/welcome" />;
+  }
+
+  return <Redirect href="/(tabs)" />;
 }

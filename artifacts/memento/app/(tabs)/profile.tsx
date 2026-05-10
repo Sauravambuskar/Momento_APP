@@ -19,7 +19,7 @@ import { getLifeStats } from "@/lib/weekUtils";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
-  const { userProfile, updateProfile, resetApp } = useApp();
+  const { userProfile, updateProfile, resetApp, signOut, currentEmail } = useApp();
 
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(userProfile?.name ?? "");
@@ -54,6 +54,23 @@ export default function ProfileScreen() {
     await updateProfile({ name: name.trim() || userProfile!.name, lifespan: ls });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setEditing(false);
+  }
+
+  async function handleSignOut() {
+    Alert.alert(
+      "Sign out",
+      "You'll need to sign back in to access your grid.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Sign out",
+          onPress: async () => {
+            await signOut();
+            router.replace("/(auth)/sign-in");
+          },
+        },
+      ]
+    );
   }
 
   function handleReset() {
@@ -133,6 +150,9 @@ export default function ProfileScreen() {
           <Text style={styles.profileName}>{userProfile.name}</Text>
         )}
         <Text style={styles.profileBirth}>Born {birthStr}</Text>
+        {currentEmail && (
+          <Text style={styles.profileEmail}>{currentEmail}</Text>
+        )}
       </GlassCard>
 
       {/* Life summary */}
@@ -184,6 +204,21 @@ export default function ProfileScreen() {
               userProfile.accentColor.slice(1)}
           </Text>
         </View>
+      </GlassCard>
+
+      {/* Account */}
+      <GlassCard>
+        <Text style={styles.sectionLabel}>Account</Text>
+        <Pressable
+          onPress={handleSignOut}
+          style={[styles.settingRow, { borderBottomWidth: 0 }]}
+        >
+          <View style={styles.signOutLeft}>
+            <Feather name="log-out" size={16} color="#F5F5F5" />
+            <Text style={styles.settingKey}>Sign out</Text>
+          </View>
+          <Feather name="chevron-right" size={16} color="#444" />
+        </Pressable>
       </GlassCard>
 
       {/* Danger zone */}
@@ -348,5 +383,16 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     fontSize: 16,
     color: "#555",
+  },
+  profileEmail: {
+    fontFamily: "Inter_400Regular",
+    fontSize: 13,
+    color: "#444",
+    letterSpacing: 0.2,
+  },
+  signOutLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
 });
