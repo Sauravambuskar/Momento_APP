@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "uFslc0S2YaxNSfVMuM-vF"
+uri = "file://artifacts/memento/assets/images/icon.png"
+type = "image"
+title = "memento app icon dot grid"

@@ -1,0 +1,275 @@
+Yeh lo Saurav — ek **full professional PRD** tumhare "My Life in Weeks" React Native + Expo app ke liye 👇
+
+***
+
+# 📋 PRD — *"Memento"* App
+### Product Requirements Document v1.0
+
+***
+
+## 1. 🧭 Product Overview
+
+| Field | Detail |
+|---|---|
+| **App Name** | **Memento** — *My Life in Weeks* |
+| **Platform** | iOS + Android (React Native + Expo) |
+| **Version** | 1.0.0 |
+| **Target Users** | 18–40 year olds seeking mindful productivity |
+| **Design Language** | Black & White Glassmorphism — Premium, Human, Non-AI-looking |
+| **Database** | Supabase (cloud) + MMKV (local-first offline) |
+
+***
+
+## 2. 🎯 Problem Statement
+
+Humans are terrible at feeling the passage of time. A 90-year life sounds long — until you see it as **4,680 dots on a grid**. *Memento* makes mortality tangible, turning abstract years into a visual weekly grid that users can interact with, annotate, and reflect on — driving intentional living.
+
+***
+
+## 3. 🖥️ Core Features (Screens)
+
+### Screen 1 — Onboarding
+- Minimal 3-step splash with **blur/frosted glass cards**
+- Step 1: Enter name + date of birth
+- Step 2: Set expected lifespan (default 80, slider up to 100)
+- Step 3: Choose accent color (White / Warm / Cool — monochrome only)
+- Smooth **Reanimated 3** entrance animations — no jarring transitions
+
+### Screen 2 — The Grid (Main Screen)
+- **SVG dot grid** — 52 columns (weeks) × lifespan rows (years)
+- Filled circles = weeks lived (solid black)
+- Empty circles = weeks remaining (outlined, frosted)
+- **Current week dot** pulses with a subtle glow animation
+- Pinch-to-zoom on the grid
+- Tap any dot → opens **Week Detail Modal**
+
+### Screen 3 — Week Detail Modal
+- Shows: Week number, Year, Date range
+- User can add a **"Memory Tag"** — emoji + short text (e.g. 🚀 Shipped my first SaaS)
+- Color-code weeks by category: Work, Health, Travel, Learning, Personal
+- Saved to MMKV locally + synced to Supabase if logged in
+
+### Screen 4 — Stats Dashboard
+- **Weeks lived** vs **Weeks remaining** — donut chart
+- % of life completed
+- Current streak: "You've tagged X weeks in a row"
+- Motivational quote (rotates daily — pre-seeded, no API dependency)
+
+### Screen 5 — Profile & Settings
+- Avatar + name
+- Edit birth date / lifespan
+- Notification settings (weekly reminder: "Log your week")
+- Export grid as **high-res PNG or PDF**
+- Account sync toggle (Supabase login)
+
+***
+
+## 4. 🛠️ Tech Stack (Professional Grade)
+
+### Core Framework
+```
+React Native + Expo SDK 52+ (Managed Workflow)
+TypeScript — strict mode
+```
+
+### UI & Styling
+| Library | Purpose |
+|---|---|
+| **Tamagui** | Primary UI component system — fastest RN styling engine  [kellton](https://www.kellton.com/kellton-tech-blog/15-best-react-native-ui-libraries-dominating-mobile-app-development) |
+| **react-native-reanimated v3** | Smooth 60fps animations, spring physics  [docs.expo](https://docs.expo.dev/develop/user-interface/animation/) |
+| **Moti** | Declarative animation layer on top of Reanimated  [docs.expo](https://docs.expo.dev/develop/user-interface/animation/) |
+| **expo-blur** | Native iOS/Android blur for glassmorphism panels |
+| **react-native-svg** | Render the dot grid as crisp SVG |
+| **Skia (react-native-skia)** | GPU-accelerated canvas for premium grid rendering |
+| **expo-linear-gradient** | Gradient overlays for glass effect |
+
+### Navigation
+```
+Expo Router v3 (file-based routing — production standard)
+react-native-screens + react-native-safe-area-context
+```
+
+### Database & Storage
+| Layer | Library | When Used |
+|---|---|---|
+| **Local (Primary)** | `react-native-mmkv` | Always — instant, offline-first  [github](https://github.com/supabase/supabase/issues/6348) |
+| **Cloud (Sync)** | `@supabase/supabase-js` | When user creates account  [docs.expo](https://docs.expo.dev/guides/using-supabase/) |
+| **Auth** | Supabase Auth (email + Google OAuth) | Optional login |
+| **State Management** | `Legend-State` | Reactive state + auto Supabase sync  [supabase](https://supabase.com/blog/local-first-expo-legend-state) |
+
+### Notifications & Utilities
+```
+expo-notifications — weekly reminder push notifications
+expo-haptics — tactile feedback on dot tap
+expo-sharing + expo-print — export grid as PDF/PNG
+expo-font — custom fonts (Geist Mono / DM Sans)
+date-fns — all date/week calculations
+react-native-reanimated-carousel — onboarding slides
+```
+
+***
+
+## 5. 🗄️ Database Schema (Supabase)
+
+```sql
+-- Users
+users (
+  id uuid PRIMARY KEY,
+  name text,
+  birth_date date,
+  expected_lifespan int DEFAULT 80,
+  accent_theme text DEFAULT 'white',
+  created_at timestamptz
+)
+
+-- Week Entries
+week_entries (
+  id uuid PRIMARY KEY,
+  user_id uuid REFERENCES users(id),
+  week_number int,        -- e.g. 1432
+  year_number int,        -- e.g. 27
+  week_start_date date,
+  emoji text,             -- e.g. "🚀"
+  note text,              -- short memory tag
+  category text,          -- work | health | travel | learning | personal
+  color_hex text,         -- monochrome shade
+  created_at timestamptz,
+  updated_at timestamptz
+)
+```
+
+**MMKV Local Schema** mirrors the same structure — synced to Supabase on next online session via **Legend-State sync plugin**. [supabase](https://supabase.com/blog/local-first-expo-legend-state)
+
+***
+
+## 6. 🎨 UI Design System
+
+### Color Palette (Black & White Glassmorphism)
+```
+Background:     #0A0A0A (near black)
+Surface Glass:  rgba(255,255,255,0.06) with blur(20px)
+Border Glass:   rgba(255,255,255,0.12)
+Text Primary:   #F5F5F5
+Text Secondary: #888888
+Dot Filled:     #FFFFFF
+Dot Empty:      rgba(255,255,255,0.15) with ring stroke
+Accent Pulse:   #FFFFFF glow — current week indicator
+```
+
+### Typography
+```
+Headings:  Geist Mono Bold (monospaced — feels intentional)
+Body:      DM Sans Regular
+Numbers:   Geist Mono — for week/year counters
+```
+
+### Glass Card Component Pattern
+```jsx
+// Every card in the app uses this pattern
+<BlurView intensity={18} tint="dark">
+  <View style={{
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 20,
+    padding: 20,
+  }}>
+    {children}
+  </View>
+</BlurView>
+```
+
+***
+
+## 7. 📂 Folder Structure
+
+```
+memento/
+├── app/                    # Expo Router screens
+│   ├── (onboarding)/
+│   │   └── index.tsx
+│   ├── (tabs)/
+│   │   ├── grid.tsx        # Main life grid
+│   │   ├── stats.tsx       # Dashboard
+│   │   └── profile.tsx
+│   └── modal/
+│       └── week-detail.tsx
+├── components/
+│   ├── ui/                 # GlassCard, Button, Badge
+│   ├── grid/               # DotGrid, DotCell, GridOverlay
+│   └── charts/             # WeekDonut, StreakBar
+├── lib/
+│   ├── supabase.ts         # Supabase client (MMKV adapter)
+│   ├── storage.ts          # MMKV wrapper
+│   ├── weekUtils.ts        # All date/week math logic
+│   └── legendState.ts      # Global state + sync config
+├── constants/
+│   ├── theme.ts
+│   └── quotes.ts           # 365 daily quotes pre-seeded
+└── assets/
+    └── fonts/
+```
+
+***
+
+## 8. 🔢 Core Logic — Week Calculator
+
+```typescript
+// lib/weekUtils.ts
+import { differenceInWeeks, addWeeks, format } from 'date-fns';
+
+export const getLifeStats = (birthDate: Date, lifespan: number) => {
+  const totalWeeks = lifespan * 52;
+  const weeksLived = differenceInWeeks(new Date(), birthDate);
+  const weeksRemaining = totalWeeks - weeksLived;
+  const percentLived = ((weeksLived / totalWeeks) * 100).toFixed(1);
+
+  return { totalWeeks, weeksLived, weeksRemaining, percentLived };
+};
+
+export const getWeekDateRange = (birthDate: Date, weekNum: number) => {
+  const start = addWeeks(birthDate, weekNum - 1);
+  const end = addWeeks(start, 1);
+  return {
+    start: format(start, 'MMM d, yyyy'),
+    end: format(end, 'MMM d, yyyy'),
+  };
+};
+```
+
+***
+
+## 9. 🚀 Development Phases
+
+| Phase | Tasks | Timeline |
+|---|---|---|
+| **Phase 1** — Foundation | Expo setup, Tamagui config, MMKV + Supabase wiring, onboarding flow | Week 1 |
+| **Phase 2** — Core Grid | SVG dot grid with Skia, week tap modal, memory tagging | Week 2 |
+| **Phase 3** — Polish | Animations (Reanimated + Moti), stats screen, daily quotes | Week 3 |
+| **Phase 4** — Cloud Sync | Supabase auth, Legend-State sync, push notifications | Week 4 |
+| **Phase 5** — Launch | Export PDF/PNG, App Store + Play Store submission via EAS Build | Week 5 |
+
+***
+
+## 10. ⚙️ DevOps Setup (Your Strength, Saurav)
+
+```
+EAS Build        → Expo Application Services for cloud builds
+EAS Submit       → Auto-submit to App Store + Play Store
+GitHub Actions   → CI/CD: lint → test → build → deploy
+Supabase CLI     → DB migrations as code (version controlled)
+Sentry (expo-sentry) → Crash reporting in prod
+```
+
+***
+
+## 11. 🎯 MVP Success Metrics
+
+- User opens app and sees their personal grid within **< 30 seconds** of install
+- Grid renders **4,680 dots smoothly** at 60fps on mid-range Android
+- Week tagging works fully **offline** without any login
+- App size **< 30MB** (Expo managed workflow target)
+
+***
+
+Yeh PRD production-ready hai Saurav — isko directly ek developer ko ya Lovable/Cursor ko de sakte ho aur kaam shuru ho jaayega. Kya tum chaahoge main **Phase 1 ka actual starter code** likh dun — Expo project setup + MMKV + Supabase boilerplate ke saath?

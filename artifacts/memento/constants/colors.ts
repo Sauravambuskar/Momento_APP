@@ -1,0 +1,53 @@
+const colors = {
+  light: {
+    text: "#F5F5F5",
+    tint: "#FFFFFF",
+    background: "#0A0A0A",
+    foreground: "#F5F5F5",
+    card: "rgba(255,255,255,0.06)",
+    cardForeground: "#F5F5F5",
+    primary: "#FFFFFF",
+    primaryForeground: "#0A0A0A",
+    secondary: "rgba(255,255,255,0.08)",
+    secondaryForeground: "#F5F5F5",
+    muted: "rgba(255,255,255,0.06)",
+    mutedForeground: "#888888",
+    accent: "rgba(255,255,255,0.1)",
+    accentForeground: "#F5F5F5",
+    destructive: "#ef4444",
+    destructiveForeground: "#ffffff",
+    border: "rgba(255,255,255,0.12)",
+    input: "rgba(255,255,255,0.12)",
+  },
+  dark: {
+    text: "#F5F5F5",
+    tint: "#FFFFFF",
+    background: "#0A0A0A",
+    foreground: "#F5F5F5",
+    card: "rgba(255,255,255,0.06)",
+    cardForeground: "#F5F5F5",
+    primary: "#FFFFFF",
+    primaryForeground: "#0A0A0A",
+    secondary: "rgba(255,255,255,0.08)",
+    secondaryForeground: "#F5F5F5",
+    muted: "rgba(255,255,255,0.06)",
+    mutedForeground: "#888888",
+    accent: "rgba(255,255,255,0.1)",
+    accentForeground: "#F5F5F5",
+    destructive: "#ef4444",
+    destructiveForeground: "#ffffff",
+    border: "rgba(255,255,255,0.12)",
+    input: "rgba(255,255,255,0.12)",
+  },
+  radius: 20,
+};
+
+export const CATEGORY_COLORS: Record<string, string> = {
+  work: "#60a5fa",
+  health: "#4ade80",
+  travel: "#fbbf24",
+  learning: "#c084fc",
+  personal: "#f472b6",
+};
+
+export default colors;
